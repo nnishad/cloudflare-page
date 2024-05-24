@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge Computing Prompt Generator</title>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+            const prompt = document.getElementById('prompt').value;
+
+            try {
+                // Send a request to the edge worker
+                const response = await fetch('https://worker-dry-feather-85ed.nikhilnishad279.workers.dev/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                if (response.ok) {
+                    const imageBlob = await response.blob();
+                    const imageUrl = URL.createObjectURL(imageBlob);
+
+                    // Display the generated image
+                    document.getElementById('result').src = imageUrl;
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    alert('Error generating image');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while generating the image.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Enter a Prompt for Image Generation</h1>
+    <form onsubmit="handleSubmit(event);">
+        <label for="prompt">Prompt:</label>
+        <input type="text" id="prompt" name="prompt" required>
+        <button type="submit">Submit</button>
+    </form>
+    <img id="result" style="display:none; margin-top:20px;" alt="Generated Image">
+</body>
+</html>
